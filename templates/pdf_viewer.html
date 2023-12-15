@@ -1,0 +1,22 @@
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+</head>
+<body>
+<center>
+    <button onclick="prevPage()">Previous Page</button>
+    <button onclick="nextPage()">Next Page</button>
+    <img src="data:image/png;base64,{{ image_data }}" alt="PDF Page">
+    <script src="script.js"></script>
+</center>
+</body>
+</html>
+<!--
+{% for image_data in page_images %}
+    <img src="data:image/png;base64,{{ image_data }}" alt="PDF Page">
+{% endfor %}
+--!>
