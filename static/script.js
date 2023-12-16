@@ -1,14 +1,20 @@
 let currentPageIndex = 0;
 
+
 const configPromise = fetch('/info')
     .then(response => response.json());
 
 
-const pagesPromises = 
+const pageListPromise = configPromise
+    .then(config => Array.from(Array(config.pageCount).keys()).map(pageIndex => {
+        fetch(`/content/${pageIndex}`)
+            .then(response => response.json())
+            .catch(error => console.error('Error fetching content:', error));
+    }));
 
 
 function showPage(pageIndex) {
-    
+   /* 
     fetch(`/content/${pageIndex}`)
         .then(response => response.json())
         .then(data => {
@@ -20,6 +26,19 @@ function showPage(pageIndex) {
             }
         })
         .catch(error => console.error('Error fetching content:', error));
+   */
+    pageListPromise
+        .then(pageList => pageList[pageIndex]
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                } else {
+                    const img = document.getElementById("pdfImageContainer");
+                    img.innerHTML = `<img src="data:image/png;base64,${data.content}" alt="PDF Page Image">`;
+                }
+            }))
+        .catch(error => console.error('Error fetching content:', error));
+
 }
 
 
