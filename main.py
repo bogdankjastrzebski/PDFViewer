@@ -10,47 +10,60 @@ def clip(a, b, c):
     return b if a < b else a if a < c else c
 
 
+def pix_to_numpy(pix):
+    return np.frombuffer(
+        pix.samples,
+        dtype=np.uint8,
+    ).reshape((pix.h, pix.w, 3))
+
+
+def numpy_to_buffer(arr):
+    return cv2.imencode(
+        '.png',
+        cv2.cvtColor(arr, cv2.COLOR_RGBA2BGRA),
+    )[1]
+
+
 def create_app(config):
 
     app = flask.Flask(__name__)
 
     @app.route('/')
     def index():
-        return 'Home Page'
+        return flask.render_template('index.html')
 
-    @app.route('/<int:page_number>/<float:scale>')
-    def render_pdf(page_number, scale):
+    @app.route('/info')
+    def info():
         with fitz.open(config.input) as pdf_document:
-            page_number = clip(page_number, 0, pdf_document.page_count-1)
-            print("page_number: ", page_number)
+            info = {
+                'pageCount': pdf_document.page_count
+            }
+        return flask.jsonify(info)
 
-            page = pdf_document.load_page(page_number)
-            pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale))
+    @app.route('/content/<int:page_number>')  # /<float:scale>')
+    def content(page_number):  # , scale):
 
-            img_array = np.frombuffer(
-                pix.samples,
-                dtype=np.uint8
-            ).reshape((pix.h, pix.w, 3))
+        with fitz.open(config.input) as pdf_document:
+            if page_number < pdf_document.page_count:
+                page = pdf_document.load_page(page_number)
+                pix = page.get_pixmap(matrix=fitz.Matrix(5, 5))
+                arr = pix_to_numpy(pix)
+                arr = 207 - (arr - 3 * (arr // 8))
+                buffer = numpy_to_buffer(arr)
+                image_data = base64.b64encode(buffer).decode('utf-8')
+            else:
+                image_data = None
 
-            img_array = 224 - (img_array - img_array // 4)
-
-            _, buffer = cv2.imencode(
-                '.png',
-                cv2.cvtColor(img_array, cv2.COLOR_RGBA2BGRA)
-            )
-
-            page_images = [
-                base64.b64encode(
-                    buffer
-                ).decode('utf-8')
-            ]
-
-        print(type(page_images[0]))
-
-        return flask.render_template(
-            'pdf_viewer.html',
-#            page_images=page_images
+        return flask.jsonify(
+            {'content': image_data}
+            if image_data else
+            {'error': 'Invalid page number'}
         )
+
+        # return flask.render_template(
+        #    'pdf_viewer.html',
+        #    image_data=image_data,
+        # )
 
     return app
 

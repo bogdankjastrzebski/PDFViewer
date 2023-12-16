@@ -1,21 +1,21 @@
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
     <title>PDF Viewer</title>
 </head>
 <body>
 <center>
-    <button onclick="prevPage()">Previous Page</button>
-    <button onclick="nextPage()">Next Page</button>
-    <img src="data:image/png;base64,{{ image_data }}" alt="PDF Page">
-    <script src="script.js"></script>
+    <div id="pdfImageContainer"></div>
 </center>
 </body>
 </html>
 <!--
+    <button onclick="prevPage()">Previous Page</button>
+    <button onclick="nextPage()">Next Page</button>
 {% for image_data in page_images %}
     <img src="data:image/png;base64,{{ image_data }}" alt="PDF Page">
 {% endfor %}
