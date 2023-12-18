@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrolling with Arrows</title>
+  <style>
+    /* Add some styling to create a scrollable container */
+    #scrollContainer {
+      width: 300px;
+      height: 150px;
+      overflow: auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<div id="scrollContainer">
+  <!-- Add some content to scroll through -->
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. ...</p>
+</div>
+
+
+<script>
+  // Get the scrollable container
+  var scrollContainer = document.getElementById('scrollContainer');
+
+  // Add an event listener for keydown events
+  document.addEventListener('keydown', function(event) {
+    // Check if the event is an arrow key
+    if (event.key === 'j') {
+        window.scrollBy({
+          top: 10,
+          left: 0,
+          behavior: "smooth",
+        });
+    } else if (event.key === 'k') {
+        window.scrollBy({
+          top: -10,
+          left: 0,
+          behavior: "smooth",
+        });
+    }
+  });
+</script>
+
+</body>
+</html>

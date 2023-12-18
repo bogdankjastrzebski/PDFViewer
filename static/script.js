@@ -5,16 +5,7 @@ const configPromise = fetch('/info')
     .then(response => response.json());
 
 
-const pageListPromise = configPromise
-    .then(config => Array.from(Array(config.pageCount).keys()).map(pageIndex => {
-        fetch(`/content/${pageIndex}`)
-            .then(response => response.json())
-            .catch(error => console.error('Error fetching content:', error));
-    }));
-
-
 function showPage(pageIndex) {
-   /* 
     fetch(`/content/${pageIndex}`)
         .then(response => response.json())
         .then(data => {
@@ -26,19 +17,6 @@ function showPage(pageIndex) {
             }
         })
         .catch(error => console.error('Error fetching content:', error));
-   */
-    pageListPromise
-        .then(pageList => pageList[pageIndex]
-            .then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                } else {
-                    const img = document.getElementById("pdfImageContainer");
-                    img.innerHTML = `<img src="data:image/png;base64,${data.content}" alt="PDF Page Image">`;
-                }
-            }))
-        .catch(error => console.error('Error fetching content:', error));
-
 }
 
 
@@ -66,24 +44,61 @@ document.addEventListener('DOMContentLoaded', function () {
     showPage(0);  // Fetch and display PDF image for page 1
 });
 
+function scrollTopBy(n) {
+    window.scrollBy({
+        top: n,
+        left: 0,
+        behavior: "smooth",
+    }); 
+}
+
+function scrollLeftBy(n) {
+    window.scrollBy({
+        top: 0,
+        left: n,
+        behavior: "smooth",
+    }); 
+}
 
 document.addEventListener('keydown', function (event) {
+    value = 50;
+    if (event.ctrlKey) {
+        switch (event.key) {
+            case 'h':
+                event.preventDefault();
+                console.log('h key pressed');
+                scrollLeftBy(value);
+                break;
+            case 'l':
+                event.preventDefault();
+                console.log('l key pressed');
+                scrollLeftBy(-value);
+                break;
+            default:
+                break;
+        }
+        return
+    }
     switch (event.key) {
-        case 'ArrowLeft':
-            console.log('Left arrow key pressed');
-            prevPage()
+        case 'j':
+            event.preventDefault();
+            console.log('j key pressed');
+            scrollTopBy(value);
             break;
-        case 'ArrowRight':
-            console.log('Right arrow key pressed');
-            nextPage()
+        case 'k':
+            event.preventDefault();
+            console.log('k key pressed');
+            scrollTopBy(-value);
             break;
         case 'h':
+            event.preventDefault();
             console.log('h key pressed');
-            prevPage()
+            prevPage();
             break;
         case 'l':
+            event.preventDefault();
             console.log('l key pressed');
-            nextPage()
+            nextPage();
             break;
         default:
             break;

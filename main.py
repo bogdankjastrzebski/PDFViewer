@@ -46,7 +46,7 @@ def create_app(config):
         with fitz.open(config.input) as pdf_document:
             if page_number < pdf_document.page_count:
                 page = pdf_document.load_page(page_number)
-                pix = page.get_pixmap(matrix=fitz.Matrix(5, 5))
+                pix = page.get_pixmap(matrix=fitz.Matrix(3, 3))
                 arr = pix_to_numpy(pix)
                 arr = 207 - (arr - 3 * (arr // 8))
                 buffer = numpy_to_buffer(arr)
