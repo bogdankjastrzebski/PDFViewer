@@ -7,14 +7,10 @@ const configPromise = fetch('/info')
 
 function showPage(pageIndex) {
     fetch(`/content/${pageIndex}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                const img = document.getElementById("pdfImageContainer");
-                img.innerHTML = `<img src="data:image/png;base64,${data.content}" alt="PDF Page Image">`;
-            }
+        .then(response => response.text())
+        .then(text => {
+                const svgContainer = document.getElementById("svgContainer");
+                svgContainer.innerHTML = text;
         })
         .catch(error => console.error('Error fetching content:', error));
 }
@@ -32,7 +28,7 @@ function prevPage() {
 
 function nextPage() {
     configPromise.then(config => {
-        if (currentPageIndex < config.pageCount) {
+        if (currentPageIndex < config.pageCount-1) {
             currentPageIndex++;
             showPage(currentPageIndex);
         }

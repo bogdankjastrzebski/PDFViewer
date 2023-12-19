@@ -1,9 +1,9 @@
 import flask
 import fitz
-import base64
 import argparse
 import numpy as np
 import cv2
+import flask_cors
 
 
 def clip(a, b, c):
@@ -27,6 +27,7 @@ def numpy_to_buffer(arr):
 def create_app(config):
 
     app = flask.Flask(__name__)
+    flask_cors.CORS(app)
 
     @app.route('/')
     def index():
@@ -46,24 +47,11 @@ def create_app(config):
         with fitz.open(config.input) as pdf_document:
             if page_number < pdf_document.page_count:
                 page = pdf_document.load_page(page_number)
-                pix = page.get_pixmap(matrix=fitz.Matrix(3, 3))
-                arr = pix_to_numpy(pix)
-                arr = 207 - (arr - 3 * (arr // 8))
-                buffer = numpy_to_buffer(arr)
-                image_data = base64.b64encode(buffer).decode('utf-8')
+                svg = page.get_svg_image(fitz.Matrix(2, 2))
             else:
-                image_data = None
+                svg = None
 
-        return flask.jsonify(
-            {'content': image_data}
-            if image_data else
-            {'error': 'Invalid page number'}
-        )
-
-        # return flask.render_template(
-        #    'pdf_viewer.html',
-        #    image_data=image_data,
-        # )
+        return flask.Response(svg, content_type='image/svg+xml')
 
     return app
 
