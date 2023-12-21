@@ -29,6 +29,13 @@ def create_app(config):
     app = flask.Flask(__name__)
     flask_cors.CORS(app)
 
+    with fitz.open(config.input) as pdf:
+        pages = [
+            pdf.load_page(number)
+            .get_svg_image(fitz.Matrix(2, 2))
+            for number in range(pdf.page_count)
+        ]
+
     @app.route('/')
     def index():
         return flask.render_template('index.html')
@@ -44,14 +51,15 @@ def create_app(config):
     @app.route('/content/<int:page_number>')  # /<float:scale>')
     def content(page_number):  # , scale):
 
-        with fitz.open(config.input) as pdf_document:
-            if page_number < pdf_document.page_count:
-                page = pdf_document.load_page(page_number)
-                svg = page.get_svg_image(fitz.Matrix(2, 2))
+        # with fitz.open(config.input) as pdf_document:
+            if page_number < len(pages):  # pdf_document.page_count:
+                # page = pdf_document.load_page(page_number)
+                # svg = page.get_svg_image(fitz.Matrix(2, 2))
+                svg = pages[page_number]
             else:
                 svg = None
 
-        return flask.Response(svg, content_type='image/svg+xml')
+            return flask.Response(svg, content_type='image/svg+xml')
 
     return app
 
