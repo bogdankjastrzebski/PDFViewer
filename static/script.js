@@ -44,7 +44,7 @@ function scrollTopBy(n) {
     window.scrollBy({
         top: n,
         left: 0,
-        behavior: "smooth",
+//      behavior: "smooth",
     }); 
 }
 
@@ -52,12 +52,14 @@ function scrollLeftBy(n) {
     window.scrollBy({
         top: 0,
         left: n,
-        behavior: "smooth",
+//      behavior: "smooth",
     }); 
 }
 
+
+
 document.addEventListener('keydown', function (event) {
-    value = 50;
+    value = 20;
     if (event.ctrlKey) {
         switch (event.key) {
             case 'h':
